@@ -5,10 +5,44 @@ version: 1.0.0
 license: MIT
 author: nimaansari
 repository: https://github.com/nimaansari/UI-agent
+
+# Python requirements
 requirements:
-  - python: ">=3.9"
-  - requests: ">=2.28.0"
-  - websocket-client: ">=11.0.0"
+  python: ">=3.9"
+  pip:
+    - requests: ">=2.28.0"
+    - websocket-client: ">=11.0.0"
+
+# System binary requirements
+system_requirements:
+  linux:
+    - google-chrome or chromium (required for browser automation)
+    - xdotool or ydotool (required for desktop keyboard/mouse input)
+    - scrot or gnome-screenshot (required for screenshots on X11)
+    - xvfb (optional, required for headless X11)
+  macos:
+    - chromium (required for browser automation)
+    - native accessibility APIs (built-in, required for desktop automation)
+  windows:
+    - chromium (required for browser automation)
+    - native UIA APIs (built-in, required for desktop automation)
+
+# Permissions & capabilities
+permissions:
+  - process_execution: true (launches/kills Chrome, runs shell commands)
+  - filesystem_write: true (writes screenshots and temp files to /tmp)
+  - network: true (connects to Chrome CDP port 9222, visits external sites)
+  - cookies: true (reads/writes browser cookies for session persistence)
+  - subprocess: true (uses xdotool, xclip, pgrep, ps for automation)
+
+# Runtime environment
+runtime:
+  type: python3
+  min_version: "3.9"
+  network_access: required (for CDP communication and test sites)
+  display_server: required on Linux (X11 or Xvfb)
+  chrome_port: 9222 (required, must be available)
+
 tags:
   - automation
   - browser
@@ -17,6 +51,8 @@ tags:
   - testing
   - rpa
   - cdp
+  - process-control
+  - high-impact
 ---
 
 # UIAgent: Universal UI Automation Skill
@@ -44,6 +80,35 @@ Use it to automate:
 - Desktop applications (terminal, text editors, file managers)
 - Cross-browser session management and persistence
 - Integration testing with visual proof
+
+---
+
+## ⚠️ Security & Impact Notice
+
+**This skill requires elevated system access:**
+
+- ✅ **Process Control** — Can launch, kill, and relaunch Chrome
+- ✅ **Shell Execution** — Runs xdotool, xclip, pgrep, ps commands
+- ✅ **File I/O** — Writes screenshots and temp files to /tmp
+- ✅ **Network** — Connects to any website, captures cookies and session data
+- ✅ **Input Control** — Can send keyboard and mouse input to any application
+
+**Before installing:**
+1. Verify your system has required binaries (Chrome, xdotool, screenshot tools)
+2. Only grant autonomous invocation (`disable-model-invocation:false`) if you trust the skill
+3. Run in an isolated environment first if handling sensitive browser sessions
+4. Be aware that this skill can capture cookies and other session material
+
+**Suitable for:**
+- Development & testing environments
+- Sandbox/VM-isolated automation
+- Trusted, supervised automation workflows
+- Web scraping and data extraction (on allowed sites)
+
+**Not recommended for:**
+- Systems with sensitive active sessions (without isolation)
+- Untrusted/autonomous execution without review
+- Production critical workflows (without testing first)
 
 ---
 
