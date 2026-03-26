@@ -1,3 +1,24 @@
+---
+name: ui-agent
+description: Universal UI automation for browsers and desktops. Chrome DevTools Protocol + native APIs. 15/15 verified tests.
+version: 1.0.0
+license: MIT
+author: nimaansari
+repository: https://github.com/nimaansari/UI-agent
+requirements:
+  - python: ">=3.9"
+  - requests: ">=2.28.0"
+  - websocket-client: ">=11.0.0"
+tags:
+  - automation
+  - browser
+  - desktop
+  - chrome
+  - testing
+  - rpa
+  - cdp
+---
+
 # UIAgent: Universal UI Automation Skill
 
 **Status:** ✅ Production Ready (v1.0)  
