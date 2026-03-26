@@ -4,7 +4,9 @@ description: Universal UI automation for browsers and desktops. Chrome DevTools 
 version: 1.0.0
 license: MIT
 author: nimaansari
+homepage: https://github.com/nimaansari/UI-agent
 repository: https://github.com/nimaansari/UI-agent
+source: https://github.com/nimaansari/UI-agent/releases/tag/v1.0.0
 
 # Python requirements
 requirements:
@@ -13,19 +15,28 @@ requirements:
     - requests: ">=2.28.0"
     - websocket-client: ">=11.0.0"
 
-# System binary requirements
+# CRITICAL: System binary requirements
 system_requirements:
   linux:
-    - google-chrome or chromium (required for browser automation)
-    - xdotool or ydotool (required for desktop keyboard/mouse input)
-    - scrot or gnome-screenshot (required for screenshots on X11)
-    - xvfb (optional, required for headless X11)
+    required:
+      - google-chrome or chromium-browser (REQUIRED: browser automation via CDP)
+      - xdotool or ydotool (REQUIRED: desktop keyboard/mouse input)
+      - scrot or gnome-screenshot (REQUIRED: screenshot capture)
+      - xvfb (REQUIRED for headless mode, optional for GUI systems)
+      - xclip (REQUIRED for clipboard operations)
+      - python3-dev (REQUIRED: compilation)
+    apt_install: |
+      sudo apt-get install -y google-chrome-stable xdotool scrot xvfb xclip python3-dev
   macos:
-    - chromium (required for browser automation)
-    - native accessibility APIs (built-in, required for desktop automation)
+    required:
+      - chromium or google-chrome (REQUIRED: browser automation)
+      - native Accessibility APIs (BUILT-IN: desktop automation)
+      - screencapture (BUILT-IN: screenshots)
   windows:
-    - chromium (required for browser automation)
-    - native UIA APIs (built-in, required for desktop automation)
+    required:
+      - chromium or google-chrome (REQUIRED: browser automation)
+      - native UIA (BUILT-IN: desktop automation)
+      - powershell (BUILT-IN: screenshots)
 
 # Permissions & capabilities
 permissions:
@@ -83,32 +94,57 @@ Use it to automate:
 
 ---
 
-## ⚠️ Security & Impact Notice
+## ⚠️ SECURITY DISCLOSURE - READ BEFORE INSTALLING
 
-**This skill requires elevated system access:**
+**THIS SKILL HAS HIGH SYSTEM IMPACT. REVIEW BEFORE USE.**
 
-- ✅ **Process Control** — Can launch, kill, and relaunch Chrome
-- ✅ **Shell Execution** — Runs xdotool, xclip, pgrep, ps commands
-- ✅ **File I/O** — Writes screenshots and temp files to /tmp
-- ✅ **Network** — Connects to any website, captures cookies and session data
-- ✅ **Input Control** — Can send keyboard and mouse input to any application
+### What This Skill Does (Capabilities)
+- ✅ **Launches & kills Chrome** (process control via subprocess)
+- ✅ **Runs system commands** (xdotool, xclip, pgrep, ps, scrot via subprocess.run)
+- ✅ **Captures & restores cookies** (reads/writes browser session data)
+- ✅ **Takes screenshots** (reads rendered pixels from /tmp files)
+- ✅ **Sends keyboard/mouse input** (xdotool to any window, cannot be sandboxed)
+- ✅ **Writes to /tmp** (temporary files for screenshots, data, config)
+- ✅ **Connects to any website** (via Chrome CDP, can capture traffic/cookies)
 
-**Before installing:**
-1. Verify your system has required binaries (Chrome, xdotool, screenshot tools)
-2. Only grant autonomous invocation (`disable-model-invocation:false`) if you trust the skill
-3. Run in an isolated environment first if handling sensitive browser sessions
-4. Be aware that this skill can capture cookies and other session material
+### What You Should Verify
+1. **System binaries exist** → Run `which google-chrome xdotool scrot` before installing
+2. **Source is trusted** → Verify repo: https://github.com/nimaansari/UI-agent (NOT placeholder URLs)
+3. **Code review recommended** → Read `src/cdp_typer.py`, `src/desktop_helpers.py` before trusted use
+4. **Isolation required** → Run in VM/container if automating sensitive sessions
+5. **Cookie warning** → This skill can read, store, and restore browser cookies (feature, but aware of it)
 
-**Suitable for:**
-- Development & testing environments
-- Sandbox/VM-isolated automation
-- Trusted, supervised automation workflows
-- Web scraping and data extraction (on allowed sites)
+### Safe Usage Patterns
+✅ **SAFE:** Development machine, test automation, isolated VM, local workflows  
+✅ **SAFE:** Web scraping (public data, allowed by ToS)  
+✅ **SAFE:** UI testing in sandboxed environment  
+❌ **UNSAFE:** Live production accounts with active sessions  
+❌ **UNSAFE:** Autonomous invocation without review on shared machines  
+❌ **UNSAFE:** Handling sensitive PII or credentials without isolation
 
-**Not recommended for:**
-- Systems with sensitive active sessions (without isolation)
-- Untrusted/autonomous execution without review
-- Production critical workflows (without testing first)
+### Before Installing
+1. Ensure you trust the GitHub source: https://github.com/nimaansari/UI-agent
+2. Run on **isolated test machine first** (VM recommended)
+3. Inspect test outputs in `tests/` to understand behavior
+4. **Do not grant autonomous invocation** without reviewing code
+5. If automating sensitive sessions, **isolate in a VM with minimal privileges**
+
+### Installation Prerequisites
+```bash
+# Linux (Ubuntu/Debian)
+sudo apt-get install -y google-chrome-stable xdotool scrot xvfb xclip python3-dev
+
+# Then verify
+which google-chrome xdotool scrot xvfb xclip
+echo $DISPLAY  # Should be :0, :1, or :99 (Xvfb)
+```
+
+### Recommended Setup
+- ✅ Run in VirtualBox/KVM/Docker (isolated VM)
+- ✅ Create dedicated user account (not root)
+- ✅ Limit network access (allow only test sites)
+- ✅ Use with human-in-the-loop (not fully autonomous)
+- ✅ Review outputs before granting full autonomy
 
 ---
 
