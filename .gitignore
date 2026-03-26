@@ -1,0 +1,24 @@
+
+# API Keys & Secrets
+*.env
+*.env.local
+.env.*
+*_key
+*_secret
+*.key
+*.pem
+
+# OpenRouter, OpenAI, Anthropic keys
+OPENROUTER*
+OPENAI*
+sk-*
+
+# Sensitive config
+config.json
+secrets.json
+credentials.json
+
+# OS
+.DS_Store
+.vscode
+.idea
