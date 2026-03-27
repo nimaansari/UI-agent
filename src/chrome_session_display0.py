@@ -49,14 +49,27 @@ def _find_xauthority():
 def _build_env():
     env = {}
     for key in ["PATH", "HOME", "USER", "LOGNAME", "LANG", "LC_ALL",
-                "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS"]:
+                "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS",
+                "WAYLAND_DISPLAY", "XDG_SESSION_TYPE"]:
         if key in os.environ:
             env[key] = os.environ[key]
 
-    env["DISPLAY"] = ":0"
-    env["GDK_BACKEND"] = "x11"
-    env["QT_QPA_PLATFORM"] = "xcb"
-    env.pop("WAYLAND_DISPLAY", None)
+    # Detect Wayland vs X11
+    wayland_display = os.environ.get("WAYLAND_DISPLAY", "")
+    
+    if wayland_display:
+        # Wayland native — Chrome renders via Wayland
+        env["WAYLAND_DISPLAY"] = wayland_display
+        env["GDK_BACKEND"] = "wayland"
+        env["QT_QPA_PLATFORM"] = "wayland"
+        env["DISPLAY"] = os.environ.get("DISPLAY", ":0")
+        print(f"[session] Wayland mode: WAYLAND_DISPLAY={wayland_display}")
+    else:
+        # X11 or Xwayland fallback
+        env["DISPLAY"] = ":0"
+        env["GDK_BACKEND"] = "x11"
+        env["QT_QPA_PLATFORM"] = "xcb"
+        print(f"[session] X11/Xwayland mode: DISPLAY=:0")
 
     xauth = _find_xauthority()
     if xauth:
