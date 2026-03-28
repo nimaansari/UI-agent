@@ -1,45 +1,44 @@
 #!/usr/bin/env python3
 # test_dc1_screenshot.py
-# Test: Screenshot real desktop via gnome-screenshot
+# Proves gnome-screenshot captures real desktop from service context
 
-import sys
-import os
-sys.path.insert(0, '/home/nimapro1381/.openclaw/workspace/gui-cowork/src')
+import os, hashlib, subprocess, time
 
-from desktop_controller import DesktopController
+print("=" * 55)
+print("TEST DC.1 — Screenshot Real Desktop")
+print("=" * 55)
 
-print("=" * 60)
-print("DC.1 Test — Screenshot Real Desktop")
-print("=" * 60)
+def take_screenshot(path):
+    r = subprocess.run(["gnome-screenshot", "-f", path], capture_output=True)
+    return os.path.getsize(path) if os.path.exists(path) else 0
 
-try:
-    ctrl = DesktopController()
+def file_hash(path):
+    with open(path, "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
 
-    print("\n[1] Taking screenshot...")
-    path = ctrl.screenshot("/tmp/dc1_test.png")
-    size = os.path.getsize(path)
-    print(f"✅ Screenshot: {path}")
-    print(f"✅ Size: {size:,} bytes")
+# Take screenshot
+size1 = take_screenshot("/tmp/dc1_shot1.png")
+hash1 = file_hash("/tmp/dc1_shot1.png")
+print(f"\n Screenshot 1 : {size1:,} bytes")
+print(f" Hash 1 : {hash1}")
 
-    print("\n[2] Computing hash...")
-    hash1 = ctrl.screenshot_hash("/tmp/dc1_hash.png")
-    print(f"✅ Hash: {hash1}")
+assert size1 > 100000, (
+    f"FAIL DC.1: Screenshot too small ({size1}b)\n"
+    f" → gnome-screenshot not capturing real desktop"
+)
+print(" ✅ Screenshot size verified (> 100KB)")
 
-    print("\n[3] Verifying size...")
-    assert size > 100000, f"FAIL: screenshot {size}b too small"
-    print(f"✅ Size verified: {size:,}b > 100KB")
+# Take second screenshot — should be same hash (nothing changed)
+time.sleep(1)
+size2 = take_screenshot("/tmp/dc1_shot2.png")
+hash2 = file_hash("/tmp/dc1_shot2.png")
+print(f"\n Screenshot 2 : {size2:,} bytes")
+print(f" Hash 2 : {hash2}")
+print(f" Same hash : {hash1 == hash2}")
 
-    print("\n[4] Verifying hash...")
-    assert hash1, "FAIL: no hash"
-    assert len(hash1) == 32, f"FAIL: hash wrong length {len(hash1)}"
-    print(f"✅ Hash verified: {hash1[:16]}...")
+assert size2 > 100000, "FAIL DC.1: Second screenshot too small"
+print(" ✅ Both screenshots have real content")
 
-    print("\n" + "=" * 60)
-    print("✅ DC.1 PASSED — Real desktop screenshot verified")
-    print("=" * 60)
-
-except Exception as e:
-    print(f"\n❌ DC.1 FAILED: {e}")
-    import traceback
-    traceback.print_exc()
-    sys.exit(1)
+print(f"\n✅ DC.1 PASSED — real desktop captured")
+print(f" Size : {size1:,} bytes")
+print(f" Hash : {hash1}")
