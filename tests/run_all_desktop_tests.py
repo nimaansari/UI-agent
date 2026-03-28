@@ -8,6 +8,9 @@ import os
 
 tests = [
     ("DC.1", "test_dc1_screenshot.py", "Screenshot Real Desktop"),
+    ("DC.2", "test_dc2_click.py", "Mouse Click"),
+    ("DC.3", "test_dc3_keyboard.py", "Keyboard Input"),
+    ("DC.4", "test_dc4_open_app.py", "Open Desktop App"),
 ]
 
 results = {}
