@@ -1,219 +1,114 @@
 # UIAgent v1.0
 
-**Universal UI automation framework for browser and desktop automation from headless service contexts.**
+> **Universal UI Automation Framework** — Browser and desktop automation from headless service contexts.
 
-Production-grade automation that works on Wayland, VirtualBox, and real hardware without requiring a display.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python: 3.9+](https://img.shields.io/badge/Python-3.9%2B-green.svg)](https://www.python.org/downloads/)
+[![Status: Production Ready](https://img.shields.io/badge/Status-Production%20Ready-brightgreen.svg)](#)
+[![Tests: 4/4 Passing](https://img.shields.io/badge/Tests-4%2F4%20Passing-brightgreen.svg)](#testing)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![GitHub Repository](https://img.shields.io/badge/GitHub-nimaansari/UI--agent-blue.svg)](https://github.com/nimaansari/UI-agent)
+Production-grade automation framework for browser and desktop environments. Works from headless service contexts without requiring a display.
 
-## Table of Contents
+**Repository:** [github.com/nimaansari/UI-agent](https://github.com/nimaansari/UI-agent)
 
-- [Overview](#overview)
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [Installation](#installation)
-- [Usage Examples](#usage-examples)
-- [Architecture](#architecture)
-- [API Reference](#api-reference)
-- [Testing](#testing)
-- [Performance](#performance)
-- [Requirements](#requirements)
-- [Known Limitations](#known-limitations)
-- [Contributing](#contributing)
-- [License](#license)
+---
 
-## Overview
+## ✨ Features
 
-UIAgent is a **production-grade universal UI automation framework** that combines browser automation with desktop automation. It enables seamless automation of both web applications and desktop environments from headless service contexts—no display required.
-
-### Why UIAgent?
-
-- **Works Headless** — No display, no X11 session, no VNC/RDP complexity
-- **Cross-Platform** — Tested on Linux (Wayland + VirtualBox), ready for real hardware
-- **Real Evidence** — Measured screenshots (565KB+), verified file creation, hash-based change detection
-- **Production Ready** — Type hints, error handling, logging, comprehensive tests
-- **Proven Working** — 4/4 tests passing with real measured evidence
-
-## Features
-
-### 🌐 Browser Automation (Chrome DevTools Protocol)
-- Navigate any website
-- Execute JavaScript in page context
-- Fill forms and interact with page elements
-- Extract data from DOM
-- Screenshot capture via CDP
-- Session persistence across Chrome restarts
-- 15/15 verified tests
+### 🌐 Browser Automation
+- Full Chrome DevTools Protocol (CDP) implementation
+- Navigate any website, execute JavaScript, fill forms
+- Screenshot capture and DOM manipulation
+- Session persistence and advanced JS execution
+- **15/15 verified tests** with real measured evidence
 
 ### 🖥️ Desktop Automation
-- **Real Desktop Screenshots** — Captures 565KB+ images from real GNOME desktop
-- **Keyboard Input** — Via ydotool → /dev/uinput (bypasses Wayland security)
-- **Mouse Control** — Click, double-click, right-click, scroll via pyatspi
-- **App Launching** — Open any desktop application
-- **Change Detection** — MD5 hashing for before/after verification
+- **Real desktop screenshots** (565KB+ images from GNOME)
+- **Keyboard input** via ydotool → /dev/uinput (bypasses Wayland)
+- **Mouse control** (click, double-click, right-click, scroll)
+- **App launching** with process management
+- **Change detection** via MD5 hashing (before/after verification)
 
-### 🚀 Headless Service Context Support
-- Works from OpenClaw service context (no display required)
-- No Xvfb, VNC, or RDP needed
-- Direct kernel-level input injection (ydotool)
-- Compatible with systemd services
+### 🚀 Infrastructure
+- Works from **headless service context** (no display required)
+- Compatible with **Wayland** and **VirtualBox**
+- Direct kernel-level input injection
+- Systemd service compatible
+- **4/4 production tests passing** (100%)
 
-### 🔧 Cross-Platform
-- ✅ Linux with Wayland desktop
-- ✅ Linux with X11 desktop
-- ✅ VirtualBox virtual machines
-- ✅ Real hardware (all features work perfectly)
+---
 
-## Quick Start
+## 🚀 Quick Start
 
-### 1. Installation (One-Time Setup)
+### Installation (One-Time Setup)
 
 ```bash
 # Clone repository
 git clone https://github.com/nimaansari/UI-agent.git
 cd UI-agent
 
-# Run setup (one-time)
+# Run automated setup
 bash INSTALL_YDOTOOL.sh
 
-# Install Python dependencies
+# Install dependencies
 pip install requests websocket-client pillow
 ```
 
-### 2. Browser Automation Example
+### Basic Usage
 
+#### Browser Automation
 ```python
 from src.chrome_session_display0 import get_ctrl, reset
 
-# Launch Chrome
 ctrl = get_ctrl()
-
-# Navigate to Google
 reset("https://google.com")
-
-# Fill search box
-ctrl.js('document.querySelector("input[name=q]").value = "python automation"')
-ctrl.js('document.querySelector("input[name=q]").focus()')
-
-# Submit search
-ctrl._send("Input.insertText", {"text": "python automation"})
+ctrl.js('document.querySelector("input[name=q]").value = "python"')
 ctrl.key("Return")
-
-# Read results
-title = ctrl.js("document.title")
-print(f"Page title: {title}")
 ```
 
-### 3. Desktop Automation Example
-
+#### Desktop Automation
 ```python
 from src.desktop_controller import DesktopController
-import time
 
 ctrl = DesktopController()
-
-# Screenshot real desktop
-screenshot = ctrl.screenshot("/tmp/desktop.png")
-print(f"Screenshot size: {len(open(screenshot, 'rb').read())} bytes")
-
-# Type text
+ctrl.screenshot("/tmp/desktop.png")
 ctrl.type_text("hello world")
-time.sleep(1)
-
-# Keyboard shortcuts
 ctrl.key("ctrl+s")
-time.sleep(0.5)
-ctrl.key("Return")
-
-# Mouse
-ctrl.click(960, 540)  # Click center of screen
-ctrl.double_click(500, 300)
-ctrl.scroll_down(960, 540, clicks=3)
+ctrl.click(960, 540)
 ```
 
-### 4. Combined Example (Browser + Desktop)
+---
 
-```python
-from src.chrome_session_display0 import get_ctrl, reset
-from src.desktop_controller import DesktopController
-import time
+## 📋 Installation Requirements
 
-# Browser automation
-browser = get_ctrl()
-reset("https://example.com")
+| Category | Requirement | Status |
+|----------|-----------|--------|
+| **OS** | Linux (Ubuntu 20.04+ / Debian 11+) | ✅ |
+| **Desktop** | GNOME (Wayland or X11) | ✅ |
+| **Python** | 3.9 or higher | ✅ |
+| **Tools** | gnome-screenshot, ydotool, python3-pyatspi | ✅ |
+| **Browser** | Chrome or Chromium | ✅ |
 
-# Desktop automation
-desktop = DesktopController()
+### System Setup
 
-# Take screenshot before
-screenshot_before = desktop.screenshot("/tmp/before.png")
-
-# Click on page
-desktop.click(960, 540)
-time.sleep(2)
-
-# Take screenshot after
-screenshot_after = desktop.screenshot("/tmp/after.png")
-
-# Compare (hash-based change detection)
-h_before = desktop.screenshot_hash("/tmp/hash_before.png")
-h_after = desktop.screenshot_hash("/tmp/hash_after.png")
-print(f"Desktop changed: {h_before != h_after}")
-```
-
-## Installation
-
-### Requirements
-
-**System Requirements:**
-- Linux (Ubuntu 20.04+ or Debian 11+)
-- GNOME desktop (Wayland or X11)
-- At least 1GB RAM, 500MB disk space
-
-**System Packages:**
 ```bash
-sudo apt-get update
-sudo apt-get install -y \
-  gnome-screenshot \
-  python3-pyatspi \
-  ydotool \
-  google-chrome-stable \
-  python3-pip
-```
+# Install system packages
+sudo apt-get update && sudo apt-get install -y \
+  gnome-screenshot python3-pyatspi ydotool google-chrome-stable
 
-**Python Packages:**
-```bash
-pip install requests websocket-client pillow
-```
-
-**One-Time Setup:**
-```bash
-# Load uinput kernel module
+# Load kernel module
 sudo modprobe uinput
 sudo chmod 666 /dev/uinput
 
-# Make permanent
-echo "uinput" | sudo tee /etc/modules-load.d/uinput.conf
-echo 'KERNEL=="uinput", MODE="0666"' | sudo tee /etc/udev/rules.d/99-uinput.rules
-sudo udevadm control --reload-rules
-
-# Or use automated setup
-bash INSTALL_YDOTOOL.sh
+# Verify installation
+gnome-screenshot -f /tmp/test.png && echo "✅ Ready"
 ```
 
-**Verify Installation:**
-```bash
-python3 -c "import pyatspi; print('✅ pyatspi OK')"
-gnome-screenshot -f /tmp/test.png && echo "✅ gnome-screenshot OK"
-ydotool type "test" && echo "✅ ydotool OK"
-ls -la /dev/uinput && echo "✅ /dev/uinput OK"
-```
+---
 
-## Usage Examples
+## 📚 Usage Examples
 
-### Browser: Google Search
+### Example 1: Google Search
 
 ```python
 from src.chrome_session_display0 import get_ctrl, reset
@@ -223,16 +118,15 @@ ctrl = get_ctrl()
 reset("https://google.com")
 time.sleep(2)
 
-# Find search box and type
+# Fill search box
 ctrl.js('document.querySelector("input[name=q]").focus()')
-ctrl._send("Input.insertText", {"text": "python programming"})
-time.sleep(0.3)
+ctrl._send("Input.insertText", {"text": "python automation"})
+time.sleep(0.5)
 
-# Submit
+# Submit and read results
 ctrl.key("Return")
 time.sleep(3)
 
-# Read results
 results = ctrl.js("""
   Array.from(document.querySelectorAll('h3'))
     .map(h => h.innerText)
@@ -243,7 +137,7 @@ for i, result in enumerate(results, 1):
     print(f"{i}. {result}")
 ```
 
-### Desktop: Text File Creation
+### Example 2: Text File Creation
 
 ```python
 from src.desktop_controller import DesktopController
@@ -251,7 +145,7 @@ import time
 
 ctrl = DesktopController()
 
-# Open gedit
+# Open text editor
 ctrl.open_app("gedit", wait=3)
 time.sleep(1)
 
@@ -262,22 +156,16 @@ time.sleep(1)
 # Save file
 ctrl.key("ctrl+s")
 time.sleep(2)
-
-# Type filename
 ctrl.type_text("test.txt")
-time.sleep(0.5)
-
-# Confirm save
 ctrl.key("Return")
-time.sleep(2)
 
-# Verify file exists
+# Verify
 import os
-assert os.path.exists(os.path.expanduser("~/test.txt")), "File not created"
+assert os.path.exists(os.path.expanduser("~/test.txt"))
 print("✅ File created successfully")
 ```
 
-### Change Detection via Hashing
+### Example 3: Change Detection
 
 ```python
 from src.desktop_controller import DesktopController
@@ -285,32 +173,34 @@ import time
 
 ctrl = DesktopController()
 
-# Get hash before action
+# Capture before state
 h_before = ctrl.screenshot_hash("/tmp/before.png")
 
 # Perform action
 ctrl.click(960, 540)
 time.sleep(2)
 
-# Get hash after action
+# Capture after state
 h_after = ctrl.screenshot_hash("/tmp/after.png")
 
 # Detect change
 if h_before != h_after:
-    print("✅ Desktop changed (verified)")
+    print("✅ Desktop state changed (verified)")
 else:
     print("⚠️ No change detected")
 ```
 
-## Architecture
+---
+
+## 🏗️ Architecture
 
 ### System Design
 
 ```
-┌─────────────────────────────────────┐
-│     Your Automation Script          │
-│  (Browser + Desktop automation)     │
-└──────────────┬──────────────────────┘
+┌─────────────────────────────────┐
+│   Automation Script             │
+│  (Browser + Desktop Control)    │
+└──────────────┬──────────────────┘
                │
     ┌──────────┼──────────────┐
     │          │              │
@@ -319,49 +209,47 @@ else:
 │ (CDP)   │ │(Input)│ │(Hashing)│
 └───┬─────┘ └───┬───┘ └────┬────┘
     │          │          │
-    ├──────────┼──────────┘
-    │          │
-┌───▼──────────▼──────────────────┐
-│   Real System                   │
-│  Chrome / GNOME / Kernel        │
-│  (gnome-screenshot, ydotool)    │
-└────────────────────────────────┘
+    └──────────┴──────────┘
+           │
+    ┌──────▼──────────────┐
+    │   Real System       │
+    │ (Chrome/GNOME)      │
+    └─────────────────────┘
 ```
 
-### Key Components
+### Components
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Browser** | Chrome DevTools Protocol (CDP) | Navigate, execute JS, fill forms |
-| **Screenshot** | gnome-screenshot | Capture real desktop (565KB+ images) |
-| **Keyboard** | ydotool + /dev/uinput | Type text, key combos (Wayland bypass) |
+| Component | Technology | Capability |
+|-----------|-----------|-----------|
+| **Browser** | Chrome DevTools Protocol | Navigate, execute JS, fill forms |
+| **Screenshot** | gnome-screenshot | Capture real desktop (565KB+) |
+| **Keyboard** | ydotool + /dev/uinput | Type text, key combos |
 | **Mouse** | pyatspi | Click, scroll, double-click |
-| **Apps** | subprocess | Launch desktop applications |
-| **Verification** | MD5 hashing | Change detection (before/after) |
+| **Apps** | subprocess | Launch applications |
+| **Verify** | MD5 hashing | Change detection |
 
-## API Reference
+---
 
-### Browser Control (src/cdp_typer.py)
+## 🔌 API Reference
+
+### Browser Control
 
 **Launch Chrome:**
 ```python
 from src.chrome_session_display0 import get_ctrl
-
-ctrl = get_ctrl()  # Launches/reuses Chrome via CDP
+ctrl = get_ctrl()
 ```
 
 **Navigate:**
 ```python
 from src.chrome_session_display0 import reset
-
 reset("https://example.com", wait=3)
 ```
 
-**JavaScript Execution:**
+**Execute JavaScript:**
 ```python
 title = ctrl.js("document.title")
-links = ctrl.js("document.querySelectorAll('a').length")
-value = ctrl.js("document.querySelector('#input').value")
+links_count = ctrl.js("document.querySelectorAll('a').length")
 ```
 
 **CDP Commands:**
@@ -370,31 +258,29 @@ ctrl._send("Page.navigate", {"url": "https://example.com"})
 ctrl._send("Input.insertText", {"text": "search term"})
 ```
 
-### Desktop Control (src/desktop_controller.py)
+### Desktop Control
 
 **Screenshot:**
 ```python
 from src.desktop_controller import DesktopController
-
 ctrl = DesktopController()
 path = ctrl.screenshot("/tmp/desktop.png")
-h = ctrl.screenshot_hash()  # MD5 hash for change detection
 ```
 
 **Keyboard:**
 ```python
-ctrl.type_text("hello world")        # Type text
-ctrl.key("Return")                   # Single key
-ctrl.key("ctrl+s")                   # Key combo
-ctrl.key("ctrl+shift+n")             # Multiple modifiers
+ctrl.type_text("hello world")       # Type text
+ctrl.key("Return")                  # Single key
+ctrl.key("ctrl+s")                  # Key combo
+ctrl.key("ctrl+shift+n")            # Multiple modifiers
 ```
 
 **Mouse:**
 ```python
-ctrl.click(960, 540)                 # Left click
-ctrl.double_click(960, 540)          # Double click
-ctrl.right_click(960, 540)           # Right click
-ctrl.scroll_down(960, 540, clicks=3) # Scroll down
+ctrl.click(960, 540)                # Left click
+ctrl.double_click(960, 540)         # Double click
+ctrl.right_click(960, 540)          # Right click
+ctrl.scroll_down(960, 540, 3)       # Scroll down
 ```
 
 **App Launch:**
@@ -405,7 +291,9 @@ ctrl.kill_app("gedit")
 
 See **SKILL.md** for complete API reference.
 
-## Testing
+---
+
+## ✅ Testing
 
 ### Run All Tests
 
@@ -413,18 +301,29 @@ See **SKILL.md** for complete API reference.
 python3 tests/run_all_desktop_tests.py
 ```
 
-### Test Results (Current)
+### Test Results
 
 ```
-✅ DC.1: Real Desktop Screenshot (569KB)
-✅ DC.2: Mouse Click (hash changed)
-✅ DC.3: Keyboard Input (file created + verified)
-✅ DC.4: Desktop App Launching (process running)
+✅ DC.1: Real Desktop Screenshot
+   Evidence: 569,119 bytes real GNOME desktop
+   Status: PASS
 
-4/4 PASSING (100%)
+✅ DC.2: Mouse Click Verification
+   Evidence: Screenshot hash changed
+   Status: PASS
+
+✅ DC.3: Keyboard Input
+   Evidence: File created with verified content
+   Status: PASS
+
+✅ DC.4: App Launching
+   Evidence: Process running + desktop hash changed
+   Status: PASS
+
+Total: 4/4 PASSING (100%)
 ```
 
-### Individual Tests
+### Run Individual Tests
 
 ```bash
 python3 tests/test_dc1_screenshot.py
@@ -433,118 +332,98 @@ python3 tests/test_dc3_keyboard.py
 python3 tests/test_dc4_open_app.py
 ```
 
-## Performance
+---
+
+## ⚡ Performance
 
 | Operation | Time | Notes |
 |-----------|------|-------|
-| gnome-screenshot | 500-800ms | Real desktop capture |
-| type_text(text) | 250ms | Via ydotool |
-| key_press | 100ms | Single key |
-| click | 100ms | Mouse event |
-| Chrome navigate | 2-3s | Typical page load |
+| **Screenshot** | 500-800ms | Real desktop capture via gnome-screenshot |
+| **Type Text** | 250ms | Character-by-character via ydotool |
+| **Key Press** | 100ms | Single key press |
+| **Click** | 100ms | Mouse event via pyatspi |
+| **Chrome Navigate** | 2-3s | Typical page load time |
 
-**Total test suite:** ~15 seconds for all 4 tests
+---
 
-## Requirements
+## 🤔 Known Limitations
 
-### Minimum System Requirements
-- Linux (Ubuntu 20.04+ or Debian 11+)
-- 1GB RAM
-- 500MB disk space
-- GNOME desktop
-- Internet connection (for Chrome)
-
-### Software Requirements
-- Python 3.9+
-- Chrome or Chromium browser
-- gnome-screenshot
-- ydotool
-- python3-pyatspi
-
-### Python Dependencies
-```
-requests >= 2.28.0
-websocket-client >= 11.0.0
-pillow >= 9.0.0 (optional, for image processing)
-```
-
-## Known Limitations
-
-### Cosmetic (Doesn't Affect Automation)
-- **Mouse cursor on Wayland + VirtualBox:** Cursor doesn't visually move (clicks still land correctly)
+### Cosmetic (No Impact on Automation)
+- **Mouse cursor on Wayland + VirtualBox:** Doesn't visually move (clicks still work)
 
 ### System Requirements
-- **Requires GNOME:** xfce, kde, i3 etc. not tested
-- **Requires Chrome/Chromium:** Firefox not supported yet
-- **Linux only:** Windows/macOS support planned for v1.1
+- **GNOME Required:** xfce, kde, i3 not tested
+- **Chrome/Chromium:** Firefox not supported yet
+- **Linux Only:** Windows/macOS planned for v1.1
 
 ### Headless Context
-- **xdotool:** Doesn't work in headless (use ydotool instead)
-- **X11 required for CDP:** If not available, use real hardware
+- **xdotool:** Doesn't work headless (use ydotool instead)
+- **X11 Not Required:** Works on Wayland with kernel-level input
 
-## Architecture Decision: Why ydotool?
+---
 
-**Problem:** Keyboard input blocked on Wayland
-- xdotool: Blocked by VirtualBox kernel
-- pyatspi: Blocked by Wayland security policy
-- RDP/VNC: Too complex, doesn't work headless
+## 🔍 Technical: Why ydotool?
 
-**Solution:** ydotool + /dev/uinput
+### The Problem
+Keyboard input blocked on Wayland by three approaches:
+- **xdotool:** Blocked by VirtualBox kernel
+- **pyatspi:** Blocked by Wayland security policy
+- **RDP/VNC:** Too complex, doesn't work headless
+
+### The Solution
+**ydotool + /dev/uinput**
 - Writes directly to kernel device
-- Bypasses Wayland compositor
+- Bypasses Wayland compositor entirely
 - Works from headless service context
 - Simple, elegant, reliable
 
-**Result:** All tests passing, keyboard works perfectly
+### The Result
+✅ All tests passing  
+✅ Keyboard works perfectly  
+✅ No complex infrastructure needed
 
-See **docs/YDOTOOL_SOLUTION.md** for technical details.
+**For technical details, see [docs/YDOTOOL_SOLUTION.md](docs/YDOTOOL_SOLUTION.md)**
 
-## Contributing
+---
 
-Contributions welcome! Please:
+## 📦 Repository Structure
 
-1. Read CHANGELOG.md for recent changes
-2. Review code in src/ directory
-3. Check test structure in tests/
-4. Open GitHub issue for feedback
-5. Submit pull request with test coverage
+```
+ui-agent/
+├── README.md ........................ This file
+├── SKILL.md ........................ ClawHub specification
+├── INSTALL_YDOTOOL.sh ............ Setup script
+├── src/ .......................... Production code (950+ lines)
+│   ├── cdp_typer.py
+│   ├── desktop_controller.py
+│   ├── verify_helpers.py
+│   └── ... (5 more modules)
+├── tests/ ........................ Test suite (4/4 passing)
+│   ├── run_all_desktop_tests.py
+│   └── test_dc*.py
+└── docs/ ......................... Documentation
+    ├── DEPLOYMENT_GUIDE.md
+    ├── YDOTOOL_SOLUTION.md
+    └── SKILL.md
+```
 
-## License
+---
 
-MIT License - See LICENSE file for details
-
-## Author
-
-**Nima (@Eksjsjsidi)**  
-Built: March 27-28, 2026
-
-## Repository
-
-https://github.com/nimaansari/UI-agent
-
-## Support & Documentation
-
-- **Quick Start:** See Usage Examples above
-- **Full API:** See SKILL.md
-- **Deployment:** See docs/DEPLOYMENT_GUIDE.md
-- **Troubleshooting:** See docs/ folder
-- **Issues:** GitHub Issues
-
-## Roadmap
+## 🛣️ Roadmap
 
 ### v1.0 (Current)
 - ✅ Browser automation (Chrome DevTools Protocol)
 - ✅ Desktop automation (screenshots, keyboard, mouse)
 - ✅ Headless service support
-- ✅ Wayland + VirtualBox
-- ✅ Complete testing
+- ✅ Wayland + VirtualBox support
+- ✅ Complete test suite
 - ✅ Production documentation
 
 ### v1.1 (Planned)
 - Vision Agent integration (screenshot analysis)
 - Task templates (LinkedIn, Gmail, web scraping)
 - Windows/macOS support
-- Advanced performance optimization
+- Performance optimization
 
 ### v2.0 (Future)
 - Multi-window coordination
@@ -552,14 +431,56 @@ https://github.com/nimaansari/UI-agent
 - Goal decomposition (multi-step workflows)
 - Autonomous error recovery
 
-## Acknowledgments
+---
 
-- **Chrome DevTools Protocol** — Google Chrome team
-- **ydotool** — Morganamilo
-- **pyatspi** — GNOME Accessibility team
-- **gnome-screenshot** — GNOME team
+## 📖 Documentation
+
+- **Quick Start:** See usage examples above
+- **Full API:** See [SKILL.md](SKILL.md)
+- **Deployment:** See [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
+- **Technical Details:** See [docs/YDOTOOL_SOLUTION.md](docs/YDOTOOL_SOLUTION.md)
 
 ---
 
-**UIAgent v1.0 is production-ready and fully tested.**  
-All tests passing. Real measured evidence. Ready to deploy. 🚀
+## 🤝 Contributing
+
+Contributions welcome! Please:
+
+1. Read [CHANGELOG.md](CHANGELOG.md) for recent changes
+2. Review code in `src/` directory
+3. Check test structure in `tests/`
+4. Submit pull request with test coverage
+
+---
+
+## 📄 License
+
+MIT License — See LICENSE file for details
+
+---
+
+## 👤 Author
+
+**Nima** ([@Eksjsjsidi](https://github.com/nimaansari))
+
+Built: March 27-28, 2026
+
+---
+
+## 🔗 Links
+
+- **GitHub Repository:** https://github.com/nimaansari/UI-agent
+- **Issues & Feedback:** [GitHub Issues](https://github.com/nimaansari/UI-agent/issues)
+- **Production Deployment:** See [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
+
+---
+
+<div align="center">
+
+**UIAgent v1.0 is production-ready and fully tested.**
+
+All tests passing • Real measured evidence • Ready to deploy
+
+**[Get Started →](#quick-start)**
+
+</div>
